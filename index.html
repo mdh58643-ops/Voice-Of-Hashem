@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice of Hashem</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f7fa;
+  color: #222;
+}
+
+header {
+  background: #1769aa;
+  color: white;
+  padding: 25px 18px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+header p {
+  margin: 8px 0 0;
+  opacity: .9;
+}
+
+.container {
+  padding: 18px;
+  max-width: 700px;
+  margin: auto;
+}
+
+.card {
+  background: white;
+  padding: 18px;
+  margin-bottom: 15px;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 13px;
+  margin: 7px 0 12px;
+  border: 1px solid #ddd;
+  border-radius: 9px;
+  font-size: 16px;
+}
+
+textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+
+button {
+  border: none;
+  background: #1769aa;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 9px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+button.delete {
+  background: #d32f2f;
+}
+
+button.read {
+  background: #388e3c;
+}
+
+.item {
+  border-left: 4px solid #1769aa;
+  padding: 12px;
+  margin: 12px 0;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.item h3 {
+  margin: 0 0 5px;
+}
+
+.category {
+  color: #1769aa;
+  font-size: 14px;
+}
+
+.empty {
+  text-align: center;
+  color: #777;
+  padding: 20px;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🎙️ Voice of Hashem</h1>
+  <p>আমার লেখা • আমার সংকলন</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>✍️ নতুন লেখা যোগ করুন</h2>
+
+    <input id="title" placeholder="লেখার শিরোনাম">
+
+    <select id="category">
+      <option value="গজল">গজল</option>
+      <option value="কবিতা">কবিতা</option>
+      <option value="ছন্দ">ছন্দ</option>
+      <option value="গল্প">গল্প</option>
+      <option value="ইসলামিক লেখা">ইসলামিক লেখা</option>
+      <option value="অন্যান্য">অন্যান্য</option>
+    </select>
+
+    <textarea id="content" placeholder="এখানে তোমার লেখা লিখো..."></textarea>
+
+    <button onclick="saveWriting()">💾 লেখা সংরক্ষণ</button>
+  </div>
+
+  <div class="card">
+    <h2>📚 আমার লেখা</h2>
+    <div id="writings"></div>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 Voice of Hashem
+</footer>
+
+<script>
+
+let writings = JSON.parse(localStorage.getItem("voiceOfHashem")) || [];
+
+function saveWriting() {
+
+  const title = document.getElementById("title").value.trim();
+  const category = document.getElementById("category").value;
+  const content = document.getElementById("content").value.trim();
+
+  if (!title || !content) {
+    alert("দয়া করে শিরোনাম ও লেখা পূরণ করো।");
+    return;
+  }
+
+  writings.unshift({
+    id: Date.now(),
+    title: title,
+    category: category,
+    content: content
+  });
+
+  localStorage.setItem("voiceOfHashem", JSON.stringify(writings));
+
+  document.getElementById("title").value = "";
+  document.getElementById("content").value = "";
+
+  showWritings();
+
+  alert("লেখাটি সফলভাবে সংরক্ষণ হয়েছে ❤️");
+}
+
+function deleteWriting(id) {
+
+  if (!confirm("এই লেখাটি মুছে ফেলতে চাও?")) {
+    return;
+  }
+
+  writings = writings.filter(item => item.id !== id);
+
+  localStorage.setItem("voiceOfHashem", JSON.stringify(writings));
+
+  showWritings();
+}
+
+function readWriting(id) {
+
+  const item = writings.find(x => x.id === id);
+
+  if (!item) return;
+
+  alert(item.title + "\n\n" + item.content);
+}
+
+function showWritings() {
+
+  const box = document.getElementById("writings");
+
+  if (writings.length === 0) {
+    box.innerHTML = '<div class="empty">এখনো কোনো লেখা সংরক্ষণ করা
